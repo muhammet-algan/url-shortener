@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kahin — URL Kısaltıcı</title>
+    <meta name="description" content="Uzun URL'lerinizi kısaltın, tıklanma istatistiklerini takip edin. Hızlı, güvenli ve ücretsiz.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Animated Background Orbs -->
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <span class="logo-icon">⚡</span>
+            <span class="logo-text">Kahin</span>
+        </div>
+        <nav class="nav">
+            <button class="nav-btn active" data-tab="shorten">Kısalt</button>
+            <button class="nav-btn" data-tab="analytics">İstatistikler</button>
+            <button class="nav-btn" data-tab="recent">Son Linkler</button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- ═══ TAB: Shorten ═══ -->
+        <section class="tab-content active" id="tab-shorten">
+            <div class="hero">
+                <h1 class="hero-title">
+                    Uzun linkleri <span class="gradient-text">kısalt</span>
+                </h1>
+                <p class="hero-subtitle">Linklerinizi kısaltın, paylaşın ve tıklanma istatistiklerini takip edin.</p>
+            </div>
+
+            <div class="card glass-card shorten-card">
+                <!-- URL Input -->
+                <div class="input-group main-input">
+                    <div class="input-icon">🔗</div>
+                    <input type="url" id="urlInput" placeholder="Uzun URL'nizi buraya yapıştırın..." autocomplete="off">
+                    <button class="btn btn-primary" id="shortenBtn">
+                        <span class="btn-text">Kısalt</span>
+                        <span class="btn-loader" hidden>
+                            <span class="spinner"></span>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Advanced Options Toggle -->
+                <button class="options-toggle" id="optionsToggle">
+                    <span>Gelişmiş Seçenekler</span>
+                    <span class="toggle-arrow">▼</span>
+                </button>
+
+                <!-- Advanced Options -->
+                <div class="options-panel" id="optionsPanel" hidden>
+                    <div class="options-grid">
+                        <div class="option-item">
+                            <label class="option-label">Özel Kod</label>
+                            <div class="input-group small">
+                                <span class="input-prefix">localhost/</span>
+                                <input type="text" id="customCode" placeholder="ornek" maxlength="12">
+                            </div>
+                            <span class="option-hint">3-12 karakter, opsiyonel</span>
+                        </div>
+                        <div class="option-item">
+                            <label class="option-label">Süre (TTL)</label>
+                            <select id="ttlSelect" class="select-input">
+                                <option value="1">1 Saat</option>
+                                <option value="24">1 Gün</option>
+                                <option value="168" selected>7 Gün</option>
+                                <option value="720">30 Gün</option>
+                                <option value="8760">1 Yıl</option>
+                            </select>
+                            <span class="option-hint">Linkin süresi dolunca silinir</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Area -->
+                <div class="result-area" id="resultArea" hidden>
+                    <div class="result-card">
+                        <div class="result-label">Kısaltılmış Link</div>
+                        <div class="result-url-group">
+                            <a href="#" class="result-url" id="resultUrl" target="_blank"></a>
+                            <button class="btn btn-copy" id="copyBtn" title="Kopyala">
+                                <span class="copy-icon">📋</span>
+                                <span class="copy-text">Kopyala</span>
+                            </button>
+                        </div>
+                        <div class="result-meta">
+                            <span class="meta-item">
+                                <span class="meta-icon">📅</span>
+                                Son Kullanma: <span id="resultExpiry"></span>
+                            </span>
+                            <span class="meta-item">
+                                <span class="meta-icon">🏷️</span>
+                                Kod: <strong id="resultCode"></strong>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Area -->
+                <div class="error-area" id="errorArea" hidden>
+                    <div class="error-card">
+                        <span class="error-icon">⚠️</span>
+                        <span class="error-message" id="errorMessage"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-row">
+                <div class="stat-card glass-card">
+                    <div class="stat-number" id="statLinks">—</div>
+                    <div class="stat-label">Oluşturulan Link</div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="stat-number" id="statClicks">—</div>
+                    <div class="stat-label">Toplam Tıklanma</div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">Hız</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ TAB: Analytics ═══ -->
+        <section class="tab-content" id="tab-analytics">
+            <div class="card glass-card">
+                <h2 class="card-title">📊 Link İstatistikleri</h2>
+                <div class="input-group main-input">
+                    <div class="input-icon">🔍</div>
+                    <input type="text" id="analyticsInput" placeholder="Kısa kodu girin (ör: springboot)">
+                    <button class="btn btn-primary" id="analyticsBtn">
+                        <span class="btn-text">Sorgula</span>
+                    </button>
+                </div>
+
+                <div class="analytics-result" id="analyticsResult" hidden>
+                    <div class="analytics-header">
+                        <h3 id="analyticsCode" class="gradient-text"></h3>
+                        <span class="status-badge" id="analyticsStatus"></span>
+                    </div>
+                    <div class="analytics-url" id="analyticsOriginalUrl"></div>
+
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <div class="analytics-number" id="analyticsTotalClicks">0</div>
+                            <div class="analytics-label">Toplam Tıklanma</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-number" id="analyticsUniqueVisitors">0</div>
+                            <div class="analytics-label">Tekil Ziyaretçi</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-number" id="analyticsCreatedAt">—</div>
+                            <div class="analytics-label">Oluşturulma</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-number" id="analyticsLastAccess">—</div>
+                            <div class="analytics-label">Son Erişim</div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Clicks Table -->
+                    <div class="clicks-section">
+                        <h4>Son Tıklamalar</h4>
+                        <div class="table-container">
+                            <table class="clicks-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tarih</th>
+                                        <th>IP Adresi</th>
+                                        <th>Tarayıcı</th>
+                                        <th>Kaynak</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clicksTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Top Referers -->
+                    <div class="referers-section" id="referersSection" hidden>
+                        <h4>En Çok Gelen Kaynaklar</h4>
+                        <div class="referers-list" id="referersList"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ TAB: Recent ═══ -->
+        <section class="tab-content" id="tab-recent">
+            <div class="card glass-card">
+                <h2 class="card-title">🕒 Son Oluşturulan Linkler</h2>
+                <p class="card-subtitle">Bu oturumda oluşturduğunuz linkler (tarayıcıda saklanır)</p>
+                <div class="recent-list" id="recentList">
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <p>Henüz link oluşturmadınız</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Kahin URL Shortener — Java Spring Boot &bull; Redis &bull; PostgreSQL &bull; Docker</p>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast" hidden>
+        <span class="toast-icon">✅</span>
+        <span class="toast-message" id="toastMessage"></span>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+# Compiled class files
+target/
+*.class
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+.project
+.classpath
+.settings/
+.factorypath
+
+# OS generated files
+.DS_Store
+Thumbs.db
+[Dd]esktop.ini
+*.tmp
+
+# Maven wrapper
+!.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+*.env.local
+
+# Build artifacts
+*.jar
+!.mvn/wrapper/*.jar
+*.war
+*.ear
+
