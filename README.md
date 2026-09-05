@@ -4,6 +4,7 @@
 
 **Production-grade URL shortening service built with Java Spring Boot**
 
+[![CI Pipeline](https://github.com/muhammet-algan/url-shortener/actions/workflows/ci.yml/badge.svg)](https://github.com/muhammet-algan/url-shortener/actions/workflows/ci.yml)
 [![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.3-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
@@ -35,11 +36,13 @@ Short → http://localhost/ab12Cd
 | 🔗 **URL Shortening** | Generate unique 6-character Base62 codes or use custom aliases |
 | ⚡ **Redis Caching** | Read-through cache for sub-millisecond redirect latency |
 | 🚦 **Rate Limiting** | IP-based sliding window (10 req/min) with Redis counters |
-| 📊 **Click Analytics** | Track clicks, unique visitors, referers, user agents, timestamps |
+| 📱 **QR Code Generation** | Dynamic high-res QR code generation (PNG) via ZXing engine |
+| 📊 **Deep Analytics** | Track clicks, unique visitors, referers, user-agent device breakdown |
+| 💻 **Device & OS Detection** | Automated client classification (Chrome/Firefox/Safari, Windows/macOS/iOS/Android) |
 | ⏱️ **TTL Support** | Set expiration by hours or specific date; auto-cleanup scheduler |
 | 🔀 **Load Balancing** | Nginx reverse proxy distributing traffic across multiple instances |
 | 🐳 **Dockerized** | One-command deployment with Docker Compose (5 services) |
-| 🛡️ **Production Ready** | Health checks, graceful shutdown, non-root containers, CORS |
+| 🛡️ **Production Ready** | Health checks, graceful shutdown, security headers, CORS |
 
 ---
 
@@ -192,6 +195,16 @@ GET /api/v1/urls/{shortCode}/stats
   }
 }
 ```
+
+### Get QR Code
+
+```http
+GET /api/v1/urls/{shortCode}/qr?size=300
+→ 200 OK
+Content-Type: image/png
+```
+
+Generates a scannable PNG QR code for the shortened link. `size` parameter is optional (default: 300px).
 
 ### Delete URL
 
