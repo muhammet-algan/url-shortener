@@ -11,10 +11,10 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.kahin</groupId>
+    <groupId>com.urlshortener</groupId>
     <artifactId>url-shortener</artifactId>
     <version>1.0.0</version>
-    <name>Kahin URL Shortener</name>
+    <name>URL Shortener</name>
     <description>Production-grade URL shortener with Redis caching, rate limiting, analytics, and Docker deployment</description>
 
     <properties>

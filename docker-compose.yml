@@ -1,5 +1,5 @@
 # ============================================
-#  Kahin URL Shortener — Docker Compose
+#  URL Shortener — Docker Compose
 #  Services: PostgreSQL, Redis, 2x Spring Boot, Nginx
 # ============================================
 
@@ -8,7 +8,7 @@ services:
   # ── PostgreSQL Database ──
   postgres:
     image: postgres:16-alpine
-    container_name: kahin-postgres
+    container_name: urlshortener-postgres
     environment:
       POSTGRES_DB: urlshortener
       POSTGRES_USER: postgres
@@ -23,12 +23,12 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - kahin-network
+      - urlshortener-network
 
   # ── Redis Cache ──
   redis:
     image: redis:7-alpine
-    container_name: kahin-redis
+    container_name: urlshortener-redis
     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     ports:
       - "6379:6379"
@@ -40,14 +40,14 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - kahin-network
+      - urlshortener-network
 
   # ── Spring Boot App — Instance 1 ──
   app-1:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: kahin-app-1
+    container_name: urlshortener-app-1
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
@@ -64,7 +64,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - kahin-network
+      - urlshortener-network
     restart: unless-stopped
 
   # ── Spring Boot App — Instance 2 ──
@@ -72,7 +72,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: kahin-app-2
+    container_name: urlshortener-app-2
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
@@ -89,13 +89,13 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - kahin-network
+      - urlshortener-network
     restart: unless-stopped
 
   # ── Nginx Load Balancer ──
   nginx:
     image: nginx:alpine
-    container_name: kahin-nginx
+    container_name: urlshortener-nginx
     ports:
       - "80:80"
     volumes:
@@ -104,7 +104,7 @@ services:
       - app-1
       - app-2
     networks:
-      - kahin-network
+      - urlshortener-network
     restart: unless-stopped
 
 volumes:
@@ -114,5 +114,5 @@ volumes:
     driver: local
 
 networks:
-  kahin-network:
+  urlshortener-network:
     driver: bridge

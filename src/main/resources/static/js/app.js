@@ -1,5 +1,5 @@
 /**
- * Kahin URL Shortener — Frontend Application
+ * URL Shortener — Frontend Application
  *
  * Handles URL shortening, analytics display, recent links,
  * and all UI interactions. Communicates with the Spring Boot backend API.
@@ -29,7 +29,7 @@ const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toastMessage');
 
 // ── Local Storage ──
-const STORAGE_KEY = 'kahin_recent_urls';
+const STORAGE_KEY = 'recent_urls';
 
 function getRecentUrls() {
     try {

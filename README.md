@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ Kahin URL Shortener
+# ⚡ URL Shortener
 
 **Production-grade URL shortening service built with Java Spring Boot**
 
@@ -19,7 +19,7 @@
 
 ## 🎯 Overview
 
-**Kahin** transforms long URLs into short, shareable links — like TinyURL, but with enterprise-grade features. Built as a portfolio project demonstrating production-ready backend development with Java Spring Boot.
+A high-performance URL shortening service that transforms long URLs into short, shareable links — like TinyURL, but with enterprise-grade features. Built as a portfolio project demonstrating production-ready backend development with Java Spring Boot.
 
 ```
 Long  → https://example.com/blog/2024/how-to-build-a-production-grade-url-shortener
@@ -88,8 +88,8 @@ Short → http://localhost/ab12Cd
 
 ```bash
 # Clone the repository
-git clone https://github.com/muhammet-algan/kahin-url-shortener.git
-cd kahin-url-shortener
+git clone https://github.com/muhammet-algan/url-shortener.git
+cd url-shortener
 
 # Start all services
 docker-compose up --build
@@ -230,13 +230,13 @@ DELETE /api/v1/urls/{shortCode}
 ## 📁 Project Structure
 
 ```
-kahin-url-shortener/
+url-shortener/
 ├── 🐳 Dockerfile                 # Multi-stage build (Maven → JRE Alpine)
 ├── 🐳 docker-compose.yml         # 5-service orchestration
 ├── 📦 pom.xml                    # Maven dependencies
 ├── 🔀 nginx/
 │   └── nginx.conf                # Load balancer config
-└── ☕ src/main/java/com/kahin/urlshortener/
+└── ☕ src/main/java/com/urlshortener/
     ├── UrlShortenerApplication.java
     ├── config/
     │   ├── AsyncConfig.java      # Thread pool for click tracking

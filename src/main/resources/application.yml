@@ -4,7 +4,7 @@ server:
 
 spring:
   application:
-    name: kahin-url-shortener
+    name: url-shortener
 
   # ── PostgreSQL ──
   datasource:
@@ -73,7 +73,7 @@ management:
 # ── Logging ──
 logging:
   level:
-    com.kahin.urlshortener: INFO
+    com.urlshortener: INFO
     org.springframework.data.redis: WARN
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
