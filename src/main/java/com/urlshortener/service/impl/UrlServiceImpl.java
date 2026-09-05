@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -56,6 +57,10 @@ public class UrlServiceImpl implements UrlService {
     private static final String CACHE_PREFIX = "url:";
     private static final int MAX_CODE_GENERATION_ATTEMPTS = 10;
     private static final UrlValidator URL_VALIDATOR = new UrlValidator(new String[]{"http", "https"});
+    private static final Set<String> RESERVED_WORDS = Set.of(
+            "api", "health", "metrics", "info", "static", "css", "js", "images",
+            "nginx-health", "admin", "login", "swagger", "docs", "robots", "favicon", "actuator"
+    );
 
     // ════════════════════════════════════════════════════════════════
     //  CREATE
@@ -73,6 +78,9 @@ public class UrlServiceImpl implements UrlService {
         String shortCode;
         if (request.getCustomCode() != null && !request.getCustomCode().isBlank()) {
             shortCode = request.getCustomCode().trim();
+            if (RESERVED_WORDS.contains(shortCode.toLowerCase())) {
+                throw new InvalidUrlException("Custom code '" + shortCode + "' is a reserved keyword");
+            }
             if (!base62Encoder.isValidBase62(shortCode)) {
                 throw new InvalidUrlException("Custom code must contain only alphanumeric characters");
             }
