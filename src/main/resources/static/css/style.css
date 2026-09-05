@@ -1058,3 +1058,68 @@ body::before {
     justify-content: center;
 }
 
+/* ── Distribution Section ── */
+.distribution-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.distribution-section h4 {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.distribution-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.dist-column {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 0.85rem;
+}
+
+.dist-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.6rem;
+}
+
+.dist-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.dist-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    padding: 0.3rem 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+}
+
+.dist-item-label {
+    color: var(--text-primary);
+}
+
+.dist-item-badge {
+    background: rgba(108, 92, 231, 0.2);
+    color: #a29bfe;
+    padding: 0.15rem 0.45rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+

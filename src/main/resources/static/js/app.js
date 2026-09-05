@@ -291,10 +291,11 @@ function renderAnalytics(data) {
     if (data.recentClicks && data.recentClicks.length > 0) {
         data.recentClicks.forEach(click => {
             const tr = document.createElement('tr');
+            const clientLabel = click.browser ? `${escapeHtml(click.browser)} • ${escapeHtml(click.operatingSystem || '')}` : shortenUA(click.userAgent);
             tr.innerHTML = `
                 <td>${formatDateTime(click.clickedAt)}</td>
                 <td>${click.ipAddress || '—'}</td>
-                <td title="${escapeHtml(click.userAgent || '')}">${shortenUA(click.userAgent)}</td>
+                <td title="${escapeHtml(click.userAgent || '')}">${clientLabel}</td>
                 <td>${click.referer || 'Doğrudan'}</td>
             `;
             tbody.appendChild(tr);
@@ -325,7 +326,44 @@ function renderAnalytics(data) {
         referersSection.hidden = true;
     }
 
+    // Distribution breakdown
+    const distributionSection = document.getElementById('distributionSection');
+    const browsersList = document.getElementById('browsersList');
+    const osList = document.getElementById('osList');
+    const devicesList = document.getElementById('devicesList');
+
+    const hasDist = (data.topBrowsers && Object.keys(data.topBrowsers).length > 0) ||
+                    (data.topOperatingSystems && Object.keys(data.topOperatingSystems).length > 0) ||
+                    (data.topDevices && Object.keys(data.topDevices).length > 0);
+
+    if (hasDist) {
+        distributionSection.hidden = false;
+        renderDistMap(browsersList, data.topBrowsers);
+        renderDistMap(osList, data.topOperatingSystems);
+        renderDistMap(devicesList, data.topDevices);
+    } else {
+        distributionSection.hidden = true;
+    }
+
     analyticsResult.hidden = false;
+}
+
+function renderDistMap(container, mapData) {
+    if (!container) return;
+    container.innerHTML = '';
+    if (!mapData || Object.keys(mapData).length === 0) {
+        container.innerHTML = '<span style="color:var(--text-muted); font-size:0.75rem;">Veri yok</span>';
+        return;
+    }
+    for (const [label, count] of Object.entries(mapData)) {
+        const item = document.createElement('div');
+        item.className = 'dist-item';
+        item.innerHTML = `
+            <span class="dist-item-label">${escapeHtml(label)}</span>
+            <span class="dist-item-badge">${count}</span>
+        `;
+        container.appendChild(item);
+    }
 }
 
 // ════════════════════════════════════════════════════════
