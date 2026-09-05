@@ -40,6 +40,9 @@ class UrlControllerTest {
     @Mock
     private RateLimiterService rateLimiterService;
 
+    @Mock
+    private com.urlshortener.service.QrCodeService qrCodeService;
+
     @InjectMocks
     private UrlController urlController;
 
@@ -137,6 +140,19 @@ class UrlControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("UP"))
                 .andExpect(jsonPath("$.service").value("url-shortener"));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/urls/{shortCode}/qr should return 200 OK and PNG image")
+    void testGetQrCode() throws Exception {
+        byte[] fakeQrBytes = new byte[]{(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+        when(urlService.getOriginalUrl(eq("abc123"), any())).thenReturn("https://example.com");
+        when(qrCodeService.generateQrCode(anyString(), anyInt(), anyInt())).thenReturn(fakeQrBytes);
+
+        mockMvc.perform(get("/api/v1/urls/abc123/qr"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.IMAGE_PNG))
+                .andExpect(header().string("Content-Disposition", "inline; filename=\"qr-abc123.png\""));
     }
 
     @Test

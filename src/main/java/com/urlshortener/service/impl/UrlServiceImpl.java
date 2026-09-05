@@ -8,6 +8,7 @@ import com.urlshortener.repository.ClickEventRepository;
 import com.urlshortener.repository.UrlRepository;
 import com.urlshortener.service.UrlService;
 import com.urlshortener.util.Base62Encoder;
+import com.urlshortener.util.UserAgentParser;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,7 @@ public class UrlServiceImpl implements UrlService {
     private final ClickEventRepository clickEventRepository;
     private final StringRedisTemplate redisTemplate;
     private final Base62Encoder base62Encoder;
+    private final UserAgentParser userAgentParser;
 
     @Value("${app.base-url:http://localhost}")
     private String baseUrl;
@@ -160,22 +162,6 @@ public class UrlServiceImpl implements UrlService {
         Url url = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new UrlNotFoundException(shortCode));
 
-        // Recent clicks (last 50)
-        List<ClickEvent> recentEvents = clickEventRepository
-                .findByUrlOrderByClickedAtDesc(url, PageRequest.of(0, 50));
-
-        List<ClickDetail> recentClicks = recentEvents.stream()
-                .map(e -> ClickDetail.builder()
-                        .clickedAt(e.getClickedAt())
-                        .ipAddress(e.getIpAddress())
-                        .userAgent(e.getUserAgent())
-                        .referer(e.getReferer())
-                        .build())
-                .collect(Collectors.toList());
-
-        // Unique visitors
-        long uniqueVisitors = clickEventRepository.countUniqueVisitors(url);
-
         // Top referers
         List<Object[]> refererData = clickEventRepository
                 .getTopReferers(url, PageRequest.of(0, 10));
@@ -183,6 +169,36 @@ public class UrlServiceImpl implements UrlService {
         for (Object[] row : refererData) {
             topReferers.put((String) row[0], (Long) row[1]);
         }
+
+        // Recent clicks (last 50) and device distributions
+        List<ClickEvent> recentEvents = clickEventRepository
+                .findByUrlOrderByClickedAtDesc(url, PageRequest.of(0, 50));
+
+        Map<String, Long> topBrowsers = new LinkedHashMap<>();
+        Map<String, Long> topOperatingSystems = new LinkedHashMap<>();
+        Map<String, Long> topDevices = new LinkedHashMap<>();
+
+        List<ClickDetail> recentClicks = recentEvents.stream()
+                .map(e -> {
+                    UserAgentParser.ClientInfo clientInfo = userAgentParser.parse(e.getUserAgent());
+                    topBrowsers.merge(clientInfo.getBrowser(), 1L, Long::sum);
+                    topOperatingSystems.merge(clientInfo.getOs(), 1L, Long::sum);
+                    topDevices.merge(clientInfo.getDeviceType(), 1L, Long::sum);
+
+                    return ClickDetail.builder()
+                            .clickedAt(e.getClickedAt())
+                            .ipAddress(e.getIpAddress())
+                            .userAgent(e.getUserAgent())
+                            .referer(e.getReferer())
+                            .browser(clientInfo.getBrowser())
+                            .operatingSystem(clientInfo.getOs())
+                            .deviceType(clientInfo.getDeviceType())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        // Unique visitors
+        long uniqueVisitors = clickEventRepository.countUniqueVisitors(url);
 
         return AnalyticsResponse.builder()
                 .shortCode(url.getShortCode())
@@ -196,6 +212,9 @@ public class UrlServiceImpl implements UrlService {
                 .active(url.isActive())
                 .recentClicks(recentClicks)
                 .topReferers(topReferers)
+                .topBrowsers(topBrowsers)
+                .topOperatingSystems(topOperatingSystems)
+                .topDevices(topDevices)
                 .build();
     }
 

@@ -45,6 +45,15 @@ public class AnalyticsResponse {
     /** Most recent click events (limited to 50). */
     private List<ClickDetail> recentClicks;
 
-    /** Top 10 referer sources with click counts. */
+    /** Top referer sources with click counts. */
     private Map<String, Long> topReferers;
+
+    /** Browser distribution breakdown. */
+    private Map<String, Long> topBrowsers;
+
+    /** Operating system distribution breakdown. */
+    private Map<String, Long> topOperatingSystems;
+
+    /** Device type breakdown (Desktop, Mobile, Tablet). */
+    private Map<String, Long> topDevices;
 }

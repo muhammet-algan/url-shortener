@@ -48,6 +48,9 @@ class UrlServiceTest {
     @Mock
     private Base62Encoder base62Encoder;
 
+    @Mock
+    private com.urlshortener.util.UserAgentParser userAgentParser;
+
     @InjectMocks
     private UrlServiceImpl urlService;
 

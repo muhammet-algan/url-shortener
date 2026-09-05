@@ -21,4 +21,7 @@ public class ClickDetail {
     private String ipAddress;
     private String userAgent;
     private String referer;
+    private String browser;
+    private String operatingSystem;
+    private String deviceType;
 }
