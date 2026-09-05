@@ -4,6 +4,7 @@ import com.urlshortener.dto.AnalyticsResponse;
 import com.urlshortener.dto.CreateUrlRequest;
 import com.urlshortener.dto.UrlResponse;
 import com.urlshortener.exception.RateLimitExceededException;
+import com.urlshortener.service.QrCodeService;
 import com.urlshortener.service.RateLimiterService;
 import com.urlshortener.service.UrlService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +27,7 @@ import java.util.Map;
  *   POST   /api/v1/urls              → Create short URL
  *   GET    /{shortCode}              → Redirect to original URL
  *   GET    /api/v1/urls/{code}/stats → Get analytics
+ *   GET    /api/v1/urls/{code}/qr    → Get QR Code image (PNG)
  *   DELETE /api/v1/urls/{code}       → Deactivate URL
  *   GET    /api/v1/health            → Health check
  */
@@ -35,6 +38,7 @@ public class UrlController {
 
     private final UrlService urlService;
     private final RateLimiterService rateLimiterService;
+    private final QrCodeService qrCodeService;
 
     // ════════════════════════════════════════════════════════════════
     //  CREATE SHORT URL
@@ -101,6 +105,29 @@ public class UrlController {
     public ResponseEntity<AnalyticsResponse> getStats(@PathVariable String shortCode) {
         AnalyticsResponse analytics = urlService.getAnalytics(shortCode);
         return ResponseEntity.ok(analytics);
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    //  QR CODE
+    // ════════════════════════════════════════════════════════════════
+
+    /**
+     * Generate and return a QR code PNG image for the shortened URL.
+     */
+    @GetMapping(value = "/api/v1/urls/{shortCode}/qr", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> getQrCode(
+            @PathVariable String shortCode,
+            @RequestParam(defaultValue = "300") int size,
+            HttpServletRequest request) {
+        urlService.getOriginalUrl(shortCode, null); // validates existence and expiration
+        String host = request.getHeader("Host");
+        String scheme = request.getHeader("X-Forwarded-Proto") != null ? request.getHeader("X-Forwarded-Proto") : request.getScheme();
+        String targetShortUrl = scheme + "://" + host + "/" + shortCode;
+        byte[] qrBytes = qrCodeService.generateQrCode(targetShortUrl, size, size);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"qr-" + shortCode + ".png\"")
+                .contentType(MediaType.IMAGE_PNG)
+                .body(qrBytes);
     }
 
     // ════════════════════════════════════════════════════════════════
