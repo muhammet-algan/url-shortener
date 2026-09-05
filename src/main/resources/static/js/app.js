@@ -19,6 +19,12 @@ const resultUrl = document.getElementById('resultUrl');
 const resultExpiry = document.getElementById('resultExpiry');
 const resultCode = document.getElementById('resultCode');
 const copyBtn = document.getElementById('copyBtn');
+const qrBtn = document.getElementById('qrBtn');
+const qrModal = document.getElementById('qrModal');
+const closeQrModal = document.getElementById('closeQrModal');
+const qrImage = document.getElementById('qrImage');
+const downloadQrBtn = document.getElementById('downloadQrBtn');
+let currentShortCode = '';
 const errorArea = document.getElementById('errorArea');
 const errorMessage = document.getElementById('errorMessage');
 const analyticsInput = document.getElementById('analyticsInput');
@@ -147,6 +153,7 @@ async function shortenUrl() {
 }
 
 function showResult(data) {
+    currentShortCode = data.shortCode;
     const fullUrl = window.location.origin + '/' + data.shortCode;
     resultUrl.textContent = fullUrl;
     resultUrl.href = fullUrl;
@@ -199,6 +206,26 @@ copyBtn.addEventListener('click', async () => {
         document.execCommand('copy');
         document.body.removeChild(input);
         showToast('Link panoya kopyalandı!');
+    }
+});
+
+// ── QR Code Modal ──
+qrBtn.addEventListener('click', () => {
+    if (!currentShortCode) return;
+    const qrUrl = `/api/v1/urls/${currentShortCode}/qr?size=300`;
+    qrImage.src = qrUrl;
+    downloadQrBtn.href = qrUrl;
+    downloadQrBtn.download = `qr-${currentShortCode}.png`;
+    qrModal.hidden = false;
+});
+
+closeQrModal.addEventListener('click', () => {
+    qrModal.hidden = true;
+});
+
+qrModal.addEventListener('click', (e) => {
+    if (e.target === qrModal) {
+        qrModal.hidden = true;
     }
 });
 
